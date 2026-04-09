@@ -11,7 +11,7 @@ Este projeto implementa testes automatizados para validar as funcionalidades cor
 
 Todos os **18 testes** implementados estão **passando** ✅
 
-### Funcionalidades Básicas (8 testes)
+### Funcionalidades Básicas (7 testes)
 - ✅ **Carregamento da Página** (1 teste)
   - Validar que a página inicial carrega com sucesso e contém conteúdo
 
