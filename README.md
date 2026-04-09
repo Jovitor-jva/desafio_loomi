@@ -91,35 +91,6 @@ Todos os **18 testes** implementados estão **passando** ✅
 | **Duração Estimada** | ~45-60 segundos |
 ### OBS: O tempo de duração foi obtido a partir da média de tempo em 5 execuções realizadas através do comando **NPX CYPRESS OPEN**. Esse tempo pode variar a depender do hardware utilizado ou se a execução for feita em modo Headless.
 
-## 🔧 Troubleshooting
-
-### Problemas Comuns e Soluções
-
-#### 1. **Elemento não encontrado**
-```
-Timed out retrying after 4000ms: Expected to find element: [data-cy="btn-trigger-profile"]
-```
-**Solução**: Verificar se a página carregou completamente. Aumentar timeouts ou adicionar validações de carregamento.
-
-#### 2. **Pointer events none**
-```
-has CSS pointer-events: none, inherited from this element
-```
-**Solução**: Usar `{ force: true }` no click ou aguardar que o elemento se torne interativo.
-
-#### 3. **Login falhando**
-**Sintomas**: Botão "Entrar" não encontrado ou formulário não carrega
-**Solução**: Verificar conectividade com o site Kasa.live ou ajustar timeouts de autenticação.
-
-#### 4. **Testes lentos**
-**Solução**: 
-- Usar modo headless para execução mais rápida
-- Otimizar waits desnecessários
-- Verificar conectividade de rede
-
-#### 5. **MCP Server não conecta**
-**Sintomas**: Erro de conexão com cliente MCP
-**Solução**: Verificar se o servidor está rodando na porta correta e se o `mcp-config.json` está configurado corretamente.
 
 ### Comandos Úteis para Debug
 
@@ -133,28 +104,6 @@ npx cypress run --browser chrome
 # Executar com vídeos de debug
 npx cypress run --record --spec "cypress/e2e/executarTestesPaginaPrincipal.cy.js"
 ```
-
-## 🔄 Melhorias Implementadas
-
-### Autenticação Inteligente
-- **Login Condicional**: Verifica se usuário já está logado antes de executar fluxo de cadastro
-- **Comando Customizado**: `cy.login()` centraliza toda lógica de autenticação
-- **Geração Automática**: E-mails, senhas e nomes gerados dinamicamente
-
-### Tratamento de Elementos Dinâmicos
-- **Timeouts Adequados**: Esperas configuradas para elementos assíncronos
-- **Force Clicks**: Uso estratégico de `{ force: true }` para elementos com `pointer-events: none`
-- **Verificações de Estado**: Validação de visibilidade e interatividade antes das ações
-
-### Arquitetura de Código
-- **Separação de Responsabilidades**: Lógica de teste separada dos seletores e comandos
-- **Reutilização**: Funções helper compartilhadas entre testes
-- **Organização**: Estrutura clara com responsabilidades bem definidas
-
-### Robustez de Testes
-- **Cleanup Automático**: Logout executado após toda suíte de testes
-- **Validações Múltiplas**: Estratégias fallback para elementos dinâmicos
-- **Logs Informativos**: Debugging facilitado com mensagens detalhadas
 
 ## 🤖 MCP Server
 
