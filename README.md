@@ -1,7 +1,11 @@
 
 # Projeto de automação de testes para a etapa de desafio técnico
 
-Projeto de automação de testes end-to-end para o site **Kasa.live** usando **Cypress**.
+Projeto de automação de testes end-to-end para o site **Kasa.live** usando **Cypress** e **MCP Server**.
+
+## 📋 Descrição
+
+Este projeto implementa testes automatizados para validar as funcionalidades core da plataforma Kasa.live. Inclui um **MCP Server** que expõe as capacidades de automação para integração com modelos de linguagem.
 
 ## 📋 Descrição
 
@@ -90,17 +94,108 @@ Todos os **18 testes** implementados estão **passando** ✅
 | **Passou** | 18 |
 | **Falhou** | 0 |
 | **Duração** | ~45 segundos |
-## 📁 Estrutura do Projeto
+## 🤖 MCP Server
 
+Este projeto inclui um **Model Context Protocol (MCP) Server** que permite a integração das capacidades de automação do Cypress com modelos de linguagem.
+
+### O que é MCP?
+
+O **Model Context Protocol (MCP)** é um protocolo aberto que padroniza como aplicações se conectam a modelos de linguagem (LLMs). Ele permite que diferentes ferramentas e fontes de dados sejam integradas de forma consistente com IA, criando um ecossistema extensível.
+
+#### Como funciona o MCP:
+
+1. **Cliente MCP**: Aplicação que se conecta ao servidor (ex: VS Code, Cursor, ou qualquer cliente MCP)
+2. **Servidor MCP**: Provedor de ferramentas e recursos (nosso `server.js`)
+3. **Protocolo**: Comunicação JSON-RPC 2.0 via stdio (entrada/saída padrão)
+
+#### Benefícios do MCP:
+
+- **Padronização**: Interface consistente para todas as ferramentas
+- **Segurança**: Execução isolada em processos separados
+- **Extensibilidade**: Fácil adição de novas ferramentas e recursos
+- **Integração com IA**: LLMs podem executar testes e analisar resultados automaticamente
+
+### Funcionalidades do MCP Server
+
+#### 🛠️ Tools Disponíveis
+
+1. **`run_test_case`**
+   - **Descrição**: Executa um caso de teste Cypress específico
+   - **Parâmetros**:
+     - `flow`: Nome do arquivo de teste (ex: `"executarTestesPaginaPrincipal.cy.js"`)
+     - `options`: Opções adicionais (browser, headless)
+   - **Retorno**: Resultado da execução com status, logs e possíveis erros
+
+2. **`get_element_status`**
+   - **Descrição**: Obtém o estado atual de um elemento na página
+   - **Parâmetros**:
+     - `selector`: Seletor CSS do elemento
+     - `url`: URL da página (padrão: https://www.kasa.live)
+   - **Retorno**: Informações detalhadas sobre o elemento (visibilidade, texto, atributos, etc.)
+
+#### 📄 Resources Disponíveis
+
+Quando um teste falha, o MCP Server automaticamente expõe:
+
+- **Error Logs**: Logs detalhados de erro como resources acessíveis
+- **Screenshots**: Capturas de tela dos erros para análise visual
+
+### Como Usar o MCP Server
+
+#### Instalação
+```bash
+npm install
 ```
-cypress/
-├── e2e/
-│   └── executarTestesPaginaPrincipal.cy.js  # Arquivo principal de testes
-├── spec/
-│   └── testesPaginaPrincipal.js             # Funções helper e lógica de testes
-└── support/
-    └── seletores.js                         # Centralização de seletores CSS
+
+#### Executar o Servidor
+```bash
+npm run mcp-server
 ```
+
+#### Configuração MCP
+Use o arquivo `mcp-config.json` para configurar o servidor em seu cliente MCP:
+
+```json
+{
+  "mcpServers": {
+    "cypress-automation": {
+      "command": "node",
+      "args": ["mcp/server.js"],
+      "cwd": "."
+    }
+  }
+}
+```
+
+#### Exemplos de Uso
+
+**Executar um teste:**
+```javascript
+// Via MCP tool call
+{
+  "name": "run_test_case",
+  "arguments": {
+    "flow": "executarTestesPaginaPrincipal.cy.js",
+    "options": {
+      "browser": "chrome",
+      "headless": true
+    }
+  }
+}
+```
+
+**Verificar estado de um elemento:**
+```javascript
+{
+  "name": "get_element_status",
+  "arguments": {
+    "selector": "[data-cy='btn-trigger-profile']",
+    "url": "https://www.kasa.live"
+  }
+}
+```
+
+Para exemplos completos e detalhados, consulte o arquivo [`MCP_USAGE.md`](MCP_USAGE.md).
 
 ## 🚀 Como Executar
 
@@ -137,21 +232,21 @@ npx cypress open
 desafio_loomi/
 ├── cypress/
 │   ├── e2e/
-│   │   └── homePage.cy.js           # Testes e2e da página inicial
+│   │   └── executarTestesPaginaPrincipal.cy.js  # Arquivo principal de testes
 │   ├── spec/
-│   │   └── testesPaginaPrincipal.js # Funções auxiliares
+│   │   └── testesPaginaPrincipal.js             # Funções helper e lógica de testes
 │   ├── support/
-│   │   ├── e2e.js                   # Configuração global
-│   │   └── selectors.js             # Seletores centralizados (em português)
-│   ├── screenshots/                 # Capturas de testes com falha
-│   └── config.js                    # Configuração do Cypress
+│   │   └── seletores.js                         # Centralização de seletores CSS
+│   ├── screenshots/                             # Capturas de testes com falha
+│   └── videos/                                  # Gravações de testes
 ├── mcp/
-│   └── server.js
+│   └── server.js                                # MCP Server para integração com LLMs
+├── mcp-config.json                              # Configuração do MCP Server
 ├── package.json
-├── pom.xml                          # Configuração Maven
 ├── cypress.config.js
-├── .gitignore
-└── README.md
+├── README.md
+└── .gitignore
+```
 ```
 
 ## 🚀 Como Rodar

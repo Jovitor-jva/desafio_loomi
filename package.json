@@ -1,10 +1,16 @@
 {
   "name": "kasa-automation",
   "version": "1.0.0",
+  "description": "MCP Server para automação de testes Cypress do Kasa.live",
+  "main": "mcp/server.js",
+  "scripts": {
+    "test": "cypress run",
+    "mcp-server": "node mcp/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
   "devDependencies": {
     "cypress": "^13.0.0"
-  },
-  "scripts": {
-    "test": "cypress run"
   }
 }
