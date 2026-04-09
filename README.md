@@ -43,7 +43,7 @@ A aplicação Kasa.live possui os seguintes requisitos funcionais principais:
 
 ## 🎯 Cenários de Testes Implementados
 
-Todos os **19 testes** implementados estão **passando** ✅
+Todos os **18 testes** implementados estão **passando** ✅
 
 ### Funcionalidades Básicas (8 testes)
 - ✅ **Carregamento da Página** (1 teste)
@@ -63,7 +63,7 @@ Todos os **19 testes** implementados estão **passando** ✅
   - Exibir texto informativo/religioso
   - Exibir versão e copyright
 
-### Funcionalidades Avançadas (11 testes)
+### Funcionalidades Avançadas (10 testes)
 - ✅ **Favoritar Times e Partidas** (3 testes)
   - Interface preparada para favoritar partidas
   - Permitir interagir com elementos de time
@@ -79,19 +79,51 @@ Todos os **19 testes** implementados estão **passando** ✅
   - Conteúdo preparado para vídeos
   - Permitir navegação na seção
 
-- ✅ **Integração com Google Calendar** (2 testes)
-  - Validar que a integração não está implementada
-  - Validar ausência de interface de notificações
+- ✅ **Integração com Google Calendar** (1 teste)
+  - Validar que o usuário consegue marcar o switch do Google Calendar
 
 ## 📊 Resultados dos Testes
 
 | Métrica | Valor |
 |---------|-------|
-| **Total de Testes** | 19 |
-| **Passou** | 19 |
+| **Total de Testes** | 18 |
+| **Passou** | 18 |
 | **Falhou** | 0 |
-| **Duração** | ~38 segundos |
+| **Duração** | ~45 segundos |
+## 📁 Estrutura do Projeto
 
+```
+cypress/
+├── e2e/
+│   └── executarTestesPaginaPrincipal.cy.js  # Arquivo principal de testes
+├── spec/
+│   └── testesPaginaPrincipal.js             # Funções helper e lógica de testes
+└── support/
+    └── seletores.js                         # Centralização de seletores CSS
+```
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+- Node.js v24.14.1 ou superior
+- npm v11.11.0 ou superior
+
+### Instalação
+```bash
+npm install
+```
+
+### Executar Testes
+```bash
+# Executar todos os testes
+npm test
+
+# Ou executar diretamente com Cypress
+npx cypress run --spec "cypress/e2e/executarTestesPaginaPrincipal.cy.js"
+
+# Executar em modo interativo (GUI)
+npx cypress open
+```
 ## 🛠️ Tecnologias Utilizadas
 
 - **Node.js** v24.14.1
