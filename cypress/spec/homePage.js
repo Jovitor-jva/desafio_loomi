@@ -43,3 +43,34 @@ export function validateFooter() {
   cy.contains(/© 2022 Kasa.live/i).should('exist');
   cy.contains(/v3.1-Web/i).should('exist');
 }
+
+// Funções para funcionalidades específicas
+export function searchMatches(searchTerm) {
+  cy.get(selectors.searchInput).first().clear().type(searchTerm);
+  cy.get(selectors.searchButton).click();
+}
+
+export function favoriteMatch() {
+  cy.get(selectors.favoriteButton).first().click();
+}
+
+export function navigateToBestMoments() {
+  cy.contains('Melhores momentos').click();
+}
+
+export function searchBestMoments(searchTerm) {
+  cy.get(selectors.videoSearchInput).clear().type(searchTerm);
+}
+
+export function playVideo() {
+  cy.get(selectors.videoThumbnail).first().click();
+}
+
+export function connectGoogleCalendar() {
+  cy.get(selectors.googleCalendarButton).click();
+}
+
+export function validateCalendarIntegration() {
+  cy.get(selectors.calendarView).should('be.visible');
+  cy.get(selectors.calendarEvent).should('have.length.at.least', 1);
+}
