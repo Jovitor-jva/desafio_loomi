@@ -24,9 +24,8 @@ Todos os **18 testes** implementados estão **passando** ✅
   - Exibir escudos dos times (pelo menos 2 imagens)
   - Exibir nomes dos times nas partidas (Minnesota Utd, Inter Miami CF, Toronto FC, DC United)
 
-- ✅ **Rodapé e Links** (2 testes)
-  - Exibir texto informativo/religioso genérico no rodapé
-  - Exibir versão e copyright (© 2022 Kasa.live, v3.1-Web)
+- ✅ **Rodapé e Links** (1 teste)
+  - Exibir o rodapé corretamente
 
 ### Funcionalidades Avançadas (10 testes)
 - ✅ **Favoritar Times e Interação** (3 testes)
