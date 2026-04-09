@@ -7,40 +7,6 @@ Projeto de automação de testes end-to-end para o site **Kasa.live** usando **C
 
 Este projeto implementa testes automatizados para validar as funcionalidades core da plataforma Kasa.live. Inclui um **MCP Server** que expõe as capacidades de automação para integração com modelos de linguagem.
 
-## 🎯 Requisitos Core da Aplicação
-
-A aplicação Kasa.live possui os seguintes requisitos funcionais principais:
-
-### 1. **Carregamento e Navegação**
-- Página inicial responsiva e acessível
-- Navegação intuitiva entre seções
-- Carregamento eficiente de conteúdo
-
-### 2. **Exibição de Partidas**
-- Listagem de partidas por liga/campeonato
-- Informações detalhadas: times, placar, status
-- Elementos visuais: escudos, logos
-
-### 3. **Favoritar Times e Partidas**
-- Sistema de favoritos para times
-- Marcação de partidas preferidas
-- Persistência de preferências do usuário
-
-### 4. **Busca de Partidas**
-- Campo de busca funcional
-- Filtros por liga, time, data
-- Resultados em tempo real
-
-### 5. **Melhores Momentos (Vídeos)**
-- Seção dedicada a highlights
-- Reprodução de vídeos
-- Busca dentro do conteúdo de vídeo
-
-### 6. **Integração com Google Calendar**
-- Marcação automática de partidas
-- Sincronização de eventos
-- Notificações de jogos
-
 ## 🎯 Cenários de Testes Implementados
 
 Todos os **18 testes** implementados estão **passando** ✅
