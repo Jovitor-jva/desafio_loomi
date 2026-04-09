@@ -184,9 +184,6 @@ Use o arquivo `mcp-config.json` para configurar o servidor em seu cliente MCP:
     "url": "https://www.kasa.live"
   }
 }
-```
-
-Para exemplos completos e detalhados, consulte o arquivo [`MCP_USAGE.md`](MCP_USAGE.md).
 
 ## 🚀 Como Executar
 
