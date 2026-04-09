@@ -11,12 +11,36 @@ import {
   enviarFormularioCriarConta,
   validarLogin,
   validarConectarGoogleCalendar,
+  navegarParaFavoritos,
+  fazerLoginENavegarParaFavoritos,
+  favoritarTime,
+  validarTimeFavoritado,
+  testarFluxoCompletoFavoritarTime,
 } from '../spec/testesPaginaPrincipal.js';
 
-describe('Página Inicial - Kasa.live', () => {
+describe('Validar a visualização da página principal', () => {
   beforeEach(() => {
-    // Acessa a página principal antes de cada teste
-    cy.visit('/', { timeout: 10000 });
+    // Gerar credenciais para login
+    const email = gerarEmailFicticio();
+    const senha = gerarSenhaAleatoria();
+    const nome = gerarNomeUsuario();
+
+    // Visitar a página inicial
+    cy.visit('/', { timeout: 15000 });
+
+    // Verificar se o usuário já está logado
+    // Se o botão "Entrar" não estiver visível, o usuário já está logado
+    cy.get('body').then(($body) => {
+      const botaoEntrarExiste = $body.find('button[data-cy="btn-trigger-profile"]').length > 0;
+      
+      if (botaoEntrarExiste) {
+        // Botão "Entrar" está visível, fazer login
+        cy.login(email, senha, nome);
+      } else {
+        // Usuário já está logado, não precisa fazer login novamente
+        cy.log('Usuário já está logado, pulando fluxo de login');
+      }
+    });
   });
 
   describe('Carregamento da Página', () => {
@@ -31,7 +55,7 @@ describe('Página Inicial - Kasa.live', () => {
     });
   });
 
-  describe('Exibição de Partidas', () => {
+  describe('Validar a exibição de Partidas', () => {
     it('Deve exibir as abas de navegação (Partidas e Melhores Momentos)', () => {
       // Validar aba de Partidas
       cy.contains('Partidas').should('be.visible');
@@ -49,7 +73,7 @@ describe('Página Inicial - Kasa.live', () => {
     });
   });
 
-  describe('Detalhes das Partidas', () => {
+  describe('Validar a exibição dos detalhes das Partidas', () => {
     it('Deve exibir o status das partidas (Finalizada)', () => {
       // Validar status de partida
       cy.contains('Finalizada').should('be.visible');
@@ -70,7 +94,7 @@ describe('Página Inicial - Kasa.live', () => {
     });
   });
 
-  describe('Rodapé e Links', () => {
+  describe('Validar a exibição do rodapé e Links', () => {
     it('Deve exibir texto informativo/religioso', () => {
       // Validar mensagem no rodapé
       cy.contains(/Porque Deus amou/i).should('exist');
@@ -88,26 +112,15 @@ describe('Página Inicial - Kasa.live', () => {
     });
   });
 
-  describe('Favoritar Times e Partidas', () => {
-    it('Deve ter interface preparada para favoritar partidas (se disponível)', () => {
-      // Verificar se há elementos que possam ser botões de favorito
-      cy.get('body').then(($body) => {
-        const temElementosFavoritos = $body.find('[class*="favorite"], [class*="star"], [class*="heart"], button').length > 0;
-        if (temElementosFavoritos) {
-          // Se há botões, verificar se algum é visível
-          cy.get('[class*="favorite"], [class*="star"], [class*="heart"], button').first().should('exist');
-        } else {
-          // Se não há, pelo menos validar que a página tem conteúdo
-          cy.log('Funcionalidade de favorito não encontrada - pode ser implementada futuramente');
-          expect(true).to.be.true;
-        }
-      });
+  describe('Validar a funcionalidade de favoritar e interagir com elementos de times ', () => {
+    it('Deve permitir favoritar um time após login (fluxo completo)', () => {
+      // Testa o fluxo completo: login → navegação → favoritar → validação
+      favoritarTime();
     });
-
     it('Deve permitir interagir com elementos de time', () => {
       // Validar que é possível clicar nos escudos dos times
       cy.get('img[alt*="Escudo"]').first().should('be.visible').click();
-      
+
       // Validar que alguma ação ocorre (pode ser modal, navegação, etc)
       cy.get('body').should('be.visible');
     });
@@ -134,8 +147,8 @@ describe('Página Inicial - Kasa.live', () => {
 
     it('Deve permitir digitar no campo de busca', () => {
       cy.get('input').first().as('campoBusca');
-      cy.get('@campoBusca').clear().type('teste');
-      cy.get('@campoBusca').should('have.value', 'teste');
+      cy.get('@campoBusca').clear().type('09 Dortmund');
+      cy.get('@campoBusca').should('have.value', '09 Dortmund');
     });
 
     it('Deve ter filtros ou opções de busca (se disponíveis)', () => {

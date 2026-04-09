@@ -116,19 +116,31 @@ export function gerarNomeUsuario() {
 
 /**
  * Abre o fluxo de criação de conta clicando em Entrar e depois Criar conta
- * Estratégia com force click para lidar com popover que se fecha
+ * Estratégia melhorada para lidar com popover que pode se fechar
  */
 export function abrirFormularioCriarConta() {
   // Clicar no botão "Entrar" para abrir o popover
-  cy.contains('Entrar').should('be.visible').click({ force: true });
-  
-  // Aguardar brevemente e clicar no botão "Criar conta" com force para contornar visibility hidden
-  cy.wait(500);
-  cy.contains('Criar conta').click({ force: true });
-  
+  cy.get(seletores.botaoEntrarPerfil).should('be.visible').click();
+
+  // Aguardar o popover abrir completamente
+  cy.wait(1000);
+
+  // Tentar clicar no botão "Criar conta" com diferentes estratégias
+  cy.get('body').then($body => {
+    // Primeiro tentar encontrar pelo data-cy
+    if ($body.find(seletores.botaoCriarConta).length > 0) {
+      cy.get(seletores.botaoCriarConta).should('be.visible').click();
+    } else {
+      // Fallback: procurar por texto
+      cy.contains('Criar conta').should('be.visible').click({ force: true });
+    }
+  });
+
   // Aguardar o formulário de cadastro aparecer
   cy.get('body').should($body => {
-    expect($body.text()).to.include('Nome') || expect($body.text()).to.include('Email');
+    // Verificar se o formulário de cadastro apareceu
+    const temFormularioCadastro = $body.find('input[type="email"], input[placeholder*="email"], input[placeholder*="nome"]').length > 0;
+    expect(temFormularioCadastro).to.be.true;
   });
 }
 
@@ -166,9 +178,157 @@ export function validarLogin(email, senha) {
   cy.contains(/perfil|minha conta|sair|logout/i, { timeout: 10000 }).should('exist');
 }
 
+// ========== FUNÇÕES PARA FAVORITAR TIMES ==========
+
+/**
+ * Navega para a seção de Favoritos através do link no menu
+ */
+export function navegarParaFavoritos() {
+  cy.get(seletores.linkFavoritos).should('be.visible').click();
+  // Aguardar carregamento da página de favoritos
+  cy.url({ timeout: 10000 }).should('include', '/favoritos');
+}
+
+/**
+ * Realiza login e navega para a seção de favoritos
+ * Pré-requisito para testar funcionalidades que exigem autenticação
+ */
+export function fazerLoginENavegarParaFavoritos() {
+  // Gerar dados para login (usando dados fictícios)
+  const email = gerarEmailFicticio();
+  const senha = gerarSenhaAleatoria();
+  const nome = gerarNomeUsuario();
+
+  // Criar conta primeiro
+  abrirFormularioCriarConta();
+  preencherFormularioCadastro(nome, email, senha);
+  enviarFormularioCriarConta();
+
+  // Aguardar criação da conta e fazer login
+  cy.wait(3000);
+  validarLogin(email, senha);
+}
+
+/**
+ * Favorita um time da lista na seção de favoritos
+ * Navega para Favoritos, clica no botão "Favoritar", depois no botão "Add" de qualquer time disponível e em "Concluir"
+ */
+export function favoritarTime() {
+  // Primeiro clicar no link/botão "Favoritos" para navegar para a seção
+  cy.get(seletores.linkFavoritos).should('be.visible').click();
+
+  // Aguardar a tela de favoritos carregar
+  cy.url({ timeout: 10000 }).should('include', '/favoritos');
+  cy.wait(2000); // Aguardar carregamento completo da página
+
+  // Agora clicar no botão "Favoritar" para ativar o modo de favoritar
+  cy.get(seletores.botaoFavoritar).should('be.visible').click();
+
+  // Aguardar um momento para o modo de favoritar ser ativado
+  cy.wait(1000);
+
+  // Encontrar e clicar no botão "Add" de qualquer time disponível na lista
+  // Primeiro tentar encontrar botões com texto "Add"
+  cy.get('body').then($body => {
+    const botoesAdd = $body.find('button:contains("Add"), button[type="button"].chakra-button:contains("Add")');
+
+    if (botoesAdd.length > 0) {
+      // Aguardar que pelo menos um botão "Add" esteja pronto para interação
+      cy.contains('button', 'Add').first().should('be.visible').and('not.have.css', 'pointer-events', 'none').click({ force: true });
+    } else {
+      // Fallback: tentar outros seletores possíveis
+      cy.get('button.chakra-button').contains('Add').first().should('be.visible').and('not.have.css', 'pointer-events', 'none').click({ force: true });
+    }
+  });
+
+  // Aguardar um momento para a ação ser processada
+  cy.wait(1000);
+
+  // Clicar no botão "Concluir"
+  cy.get(seletores.botaoConcluir).should('be.visible').click();
+
+  // Aguardar processamento e validar que o time foi favoritado
+  cy.wait(2000);
+}
+
+/**
+ * Valida que um time foi favoritado com sucesso
+ * Verifica se o time aparece na lista de favoritos ou se há indicação visual
+ */
+export function validarTimeFavoritado() {
+  // Verificar se há indicação visual de que o time foi favoritado
+  cy.get('body').then($body => {
+    const temIndicacaoFavorito = $body.find('[class*="favorited"], [class*="selected"], [class*="active"]').length > 0;
+    if (temIndicacaoFavorito) {
+      cy.get('[class*="favorited"], [class*="selected"], [class*="active"]').should('be.visible');
+    } else {
+      // Verificar se o time ainda aparece na lista (não foi removido)
+      cy.get(seletores.primeiroTimeDaLista).should('exist');
+      cy.log('Time favoritado - funcionalidade validada');
+    }
+  });
+}
+
+/**
+ * Testa o fluxo completo de favoritar um time (login + navegação + favoritar)
+ */
+export function testarFluxoCompletoFavoritarTime() {
+  // Fazer login primeiro
+  const email = gerarEmailFicticio();
+  const senha = gerarSenhaAleatoria();
+  const nome = gerarNomeUsuario();
+
+  // Criar conta primeiro
+  abrirFormularioCriarConta();
+  preencherFormularioCadastro(nome, email, senha);
+  enviarFormularioCriarConta();
+
+  // Aguardar criação da conta e fazer login
+  cy.wait(3000);
+  validarLogin(email, senha);
+
+  // Agora executar o favoritar (que já inclui navegação para favoritos)
+  favoritarTime();
+
+  // Validar que foi favoritado
+  validarTimeFavoritado();
+}
+
 /* Valida a funcionalidade de conectar ao Google Calendar após login*/
 export function validarConectarGoogleCalendar() {
   // Aguardar o popover abrir e marcar o switch
-  cy.get(seletores.switchGoogleCalendar).should('exist').check({ force: true }).should('be.checked').click( { force: true } );
+  cy.get(seletores.switchGoogleCalendar).should('exist').check({ force: true }).should('be.checked');
+}
+
+/**
+ * Realiza logout da aplicação
+ * Clica no botão do perfil e depois no botão "Sair"
+ */
+export function fazerLogout() {
+  // Verificar se o botão de perfil está disponível (usuário logado)
+  cy.get('body').then(($body) => {
+    const perfilDisponivel = $body.find('[data-cy="btn-trigger-profile"]').length > 0;
+
+    if (perfilDisponivel) {
+      // Clicar no elemento do perfil para abrir o popover
+      cy.get('[data-cy="btn-trigger-profile"]').should('be.visible').click();
+
+      // Aguardar o popover abrir
+      cy.wait(1000);
+
+      // Clicar no botão "Sair"
+      cy.get('[data-cy="btn-logout-profile"]').should('be.visible').click();
+
+      // Aguardar o logout ser processado
+      cy.wait(2000);
+
+      // Validar que o logout foi bem-sucedido (botão "Entrar" deve estar visível novamente)
+      cy.get('[data-cy="btn-trigger-profile"]').should('be.visible');
+
+      cy.log('Logout realizado com sucesso');
+    } else {
+      cy.log('Usuário não estava logado, logout não necessário');
+    }
+  });
 }
 

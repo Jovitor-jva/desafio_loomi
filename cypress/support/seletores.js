@@ -48,6 +48,13 @@ export const seletores = {
   // Botões gerais
   botaoPrimario: 'button[class*="chakra-button"]',
   botaoDoGoogleCalendar: 'button:contains("Google Calendar")',
+
+  // Favoritar times
+  linkFavoritos: 'a[data-cy="link/favoritos"]',
+  botaoFavoritar: 'button[data-cy="btn-favorite-team"]',
+  botaoAddTime: 'button:contains("Add"), button.chakra-button:contains("Add"), button[type="button"].chakra-button',
+  botaoConcluir: 'button:contains("Concluir"), [data-cy*="concluir"]',
+  primeiroTimeDaLista: '[class*="team"]:first, [class*="match"]:first [class*="team"], .team-item:first',
   botaoDeConectarCalendario: '[class*="connect-calendar"]',
 
   // Melhores momentos
