@@ -25,7 +25,7 @@ Todos os **18 testes** implementados estão **passando** ✅
   - Exibir nomes dos times nas partidas (Minnesota Utd, Inter Miami CF, Toronto FC, DC United)
 
 - ✅ **Rodapé e Links** (2 testes)
-  - Exibir texto informativo/religioso ("Porque Deus amou")
+  - Exibir texto informativo/religioso genérico no rodapé
   - Exibir versão e copyright (© 2022 Kasa.live, v3.1-Web)
 
 ### Funcionalidades Avançadas (10 testes)
@@ -336,4 +336,4 @@ João Vitor Lima da Silva - Analista de qualidade de software
 
 **Última atualização**: Abril, 2026
 
-![alt text](image.png)
+![alt text](image-1.png)

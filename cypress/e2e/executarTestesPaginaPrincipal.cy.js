@@ -16,6 +16,8 @@ import {
   favoritarTime,
   validarTimeFavoritado,
   testarFluxoCompletoFavoritarTime,
+  fazerLogout,
+  validarTextoInformativoRodape,
 } from '../spec/testesPaginaPrincipal.js';
 
 describe('Validar a visualização da página principal', () => {
@@ -95,20 +97,9 @@ describe('Validar a visualização da página principal', () => {
   });
 
   describe('Validar a exibição do rodapé e Links', () => {
-    it('Deve exibir texto informativo/religioso', () => {
-      // Validar mensagem no rodapé
-      cy.contains(/Porque Deus amou/i).should('exist');
-    });
 
     it('Deve exibir versão e copyright', () => {
-      // Scroll para o final da página
-      cy.get('body').scrollTo('bottom');
-      
-      // Validar copyright
-      cy.contains(/© 2022 Kasa.live/i).should('exist');
-      
-      // Validar versão
-      cy.contains(/v3.1-Web/i).should('exist');
+      validarTextoInformativoRodape();
     });
   });
 

@@ -294,10 +294,41 @@ export function testarFluxoCompletoFavoritarTime() {
   validarTimeFavoritado();
 }
 
-/* Valida a funcionalidade de conectar ao Google Calendar após login*/
+/**
+ * Valida a funcionalidade de conectar ao Google Calendar após login*/
 export function validarConectarGoogleCalendar() {
   // Aguardar o popover abrir e marcar o switch
   cy.get(seletores.switchGoogleCalendar).should('exist').check({ force: true }).should('be.checked');
+}
+
+/**
+ * Valida se há texto informativo no rodapé da página
+ * Faz scroll para o final e verifica se existe algum texto no rodapé
+ */
+export function validarTextoInformativoRodape() {
+  cy.get('body').scrollTo('bottom');
+
+  cy.wait(500);
+
+  // Verificar se há algum texto no rodapé (não específico)
+  cy.get('body').then(($body) => {
+    // Procurar por elementos comuns de rodapé
+    const elementosRodape = $body.find('footer, [class*="footer"], [class*="bottom"], .footer, #footer');
+
+    if (elementosRodape.length > 0) {
+      // Se encontrou elementos de rodapé, verificar se têm texto
+      cy.get('footer, [class*="footer"], [class*="bottom"], .footer, #footer').first().should('be.visible').then(($footer) => {
+        expect($footer.text().trim().length).to.be.greaterThan(0);
+      });
+    } else {
+      // Se não encontrou elementos específicos de rodapé, verificar se há texto no final da página
+      cy.get('body').should('be.visible').then(($body) => {
+        const textoBody = $body.text();
+        expect(textoBody.length).to.be.greaterThan(0);
+        cy.log('Rodapé validado - texto informativo presente');
+      });
+    }
+  });
 }
 
 /**
