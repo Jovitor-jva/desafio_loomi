@@ -127,7 +127,7 @@ describe('Página Inicial - Kasa.live', () => {
 
 ## 👤 Autor
 
-João Vitor Lima da Silva - Teste técnico
+João Vitor Lima da Silva - Analista de qualidade de software
 
 ---
 
