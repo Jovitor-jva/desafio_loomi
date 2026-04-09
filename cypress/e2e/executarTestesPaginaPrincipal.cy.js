@@ -1,7 +1,17 @@
-// cypress/e2e/homePage.cy.js
+// cypress/e2e/executarTestesPaginaPrincipal.cy.js
 // Testes e2e para a página inicial do Kasa.live
 
-import { selectors } from '../support/selectors.js';
+import { seletores } from '../support/seletores.js';
+import {
+  gerarEmailFicticio,
+  gerarSenhaAleatoria,
+  gerarNomeUsuario,
+  abrirFormularioCriarConta,
+  preencherFormularioCadastro,
+  enviarFormularioCriarConta,
+  validarLogin,
+  validarConectarGoogleCalendar,
+} from '../spec/testesPaginaPrincipal.js';
 
 describe('Página Inicial - Kasa.live', () => {
   beforeEach(() => {
@@ -12,10 +22,10 @@ describe('Página Inicial - Kasa.live', () => {
   describe('Carregamento da Página', () => {
     it('Deve carregar a página inicial com sucesso', () => {
       // Validar que o body (corpo da página) está visível
-      cy.get(selectors.pageBody).should('be.visible');
-      
+      cy.get(seletores.corpoDaPagina).should('be.visible');
+
       // Validar que há conteúdo na página
-      cy.get(selectors.pageBody).then(($body) => {
+      cy.get(seletores.corpoDaPagina).then(($body) => {
         expect($body.text().length).to.be.greaterThan(0);
       });
     });
@@ -25,7 +35,7 @@ describe('Página Inicial - Kasa.live', () => {
     it('Deve exibir as abas de navegação (Partidas e Melhores Momentos)', () => {
       // Validar aba de Partidas
       cy.contains('Partidas').should('be.visible');
-      
+
       // Validar aba de Melhores Momentos
       cy.contains('Melhores momentos').should('be.visible');
     });
@@ -33,7 +43,7 @@ describe('Página Inicial - Kasa.live', () => {
     it('Deve exibir informações de liga/campeonato', () => {
       // Validar que nome da liga está visível
       cy.contains('MLS').should('be.visible');
-      
+
       // Validar que há também outras ligas
       cy.contains('Premier League').should('be.visible');
     });
@@ -82,8 +92,8 @@ describe('Página Inicial - Kasa.live', () => {
     it('Deve ter interface preparada para favoritar partidas (se disponível)', () => {
       // Verificar se há elementos que possam ser botões de favorito
       cy.get('body').then(($body) => {
-        const hasFavoriteElements = $body.find('[class*="favorite"], [class*="star"], [class*="heart"], button').length > 0;
-        if (hasFavoriteElements) {
+        const temElementosFavoritos = $body.find('[class*="favorite"], [class*="star"], [class*="heart"], button').length > 0;
+        if (temElementosFavoritos) {
           // Se há botões, verificar se algum é visível
           cy.get('[class*="favorite"], [class*="star"], [class*="heart"], button').first().should('exist');
         } else {
@@ -105,8 +115,8 @@ describe('Página Inicial - Kasa.live', () => {
     it('Deve ter seção de calendário preparada (se disponível)', () => {
       // Verificar se há elementos relacionados a calendário
       cy.get('body').then(($body) => {
-        const hasCalendarElements = $body.find('[class*="calendar"], [class*="agenda"], [class*="schedule"]').length > 0;
-        if (hasCalendarElements) {
+        const temElementosCalendario = $body.find('[class*="calendar"], [class*="agenda"], [class*="schedule"]').length > 0;
+        if (temElementosCalendario) {
           cy.get('[class*="calendar"], [class*="agenda"], [class*="schedule"]').first().should('be.visible');
         } else {
           cy.log('Seção de calendário não encontrada - funcionalidade pode ser implementada');
@@ -118,29 +128,20 @@ describe('Página Inicial - Kasa.live', () => {
 
   describe('Buscar Partidas', () => {
     it('Deve ter campo de busca disponível', () => {
-      // Verificar se há algum campo de input na página (qualquer tipo)
       cy.get('input').should('have.length.at.least', 1);
-      
-      // Validar que pelo menos um input existe (não necessariamente type="text")
       cy.get('input').first().should('exist');
     });
 
     it('Deve permitir digitar no campo de busca', () => {
-      // Pegar o primeiro campo de input disponível
-      cy.get('input').first().as('searchField');
-      
-      // Digitar algo no campo
-      cy.get('@searchField').clear().type('teste');
-      
-      // Validar que o texto foi inserido
-      cy.get('@searchField').should('have.value', 'teste');
+      cy.get('input').first().as('campoBusca');
+      cy.get('@campoBusca').clear().type('teste');
+      cy.get('@campoBusca').should('have.value', 'teste');
     });
 
     it('Deve ter filtros ou opções de busca (se disponíveis)', () => {
-      // Verificar se há botões ou links que possam ser filtros
       cy.get('body').then(($body) => {
-        const hasFilterElements = $body.find('button, select, [class*="filter"], [class*="dropdown"]').length > 0;
-        if (hasFilterElements) {
+        const temElementosFiltro = $body.find('button, select, [class*="filter"], [class*="dropdown"]').length > 0;
+        if (temElementosFiltro) {
           cy.get('button, select, [class*="filter"], [class*="dropdown"]').should('have.length.at.least', 1);
         } else {
           cy.log('Filtros de busca não encontrados - funcionalidade básica de busca funciona');
@@ -152,21 +153,15 @@ describe('Página Inicial - Kasa.live', () => {
 
   describe('Melhores Momentos', () => {
     it('Deve navegar para a aba de melhores momentos', () => {
-      // Clicar na aba "Melhores momentos"
       cy.contains('Melhores momentos').click();
-      
-      // Validar que estamos na seção correta
       cy.url().should('include', '/melhores-momentos');
     });
 
     it('Deve ter conteúdo preparado para vídeos (se disponível)', () => {
-      // Navegar para melhores momentos
       cy.contains('Melhores momentos').click();
-      
-      // Verificar se há elementos que possam ser vídeos ou thumbnails
       cy.get('body').then(($body) => {
-        const hasVideoElements = $body.find('video, [class*="video"], [class*="thumbnail"], iframe').length > 0;
-        if (hasVideoElements) {
+        const temElementosVideo = $body.find('video, [class*="video"], [class*="thumbnail"], iframe').length > 0;
+        if (temElementosVideo) {
           cy.get('video, [class*="video"], [class*="thumbnail"], iframe').should('have.length.at.least', 1);
         } else {
           cy.log('Elementos de vídeo não encontrados - seção preparada para implementação');
@@ -176,10 +171,8 @@ describe('Página Inicial - Kasa.live', () => {
     });
 
     it('Deve permitir navegação na seção de melhores momentos', () => {
-      // Navegar para melhores momentos
       cy.contains('Melhores momentos').click();
-      
-      // Validar que a página carrega
+
       cy.get('body').should('be.visible');
       
       // Verificar se há algum conteúdo textual
@@ -189,46 +182,10 @@ describe('Página Inicial - Kasa.live', () => {
     });
   });
 
-  describe('Integração com Google Calendar', () => {
-    it('Deve ter elementos preparados para integração com calendário (se disponível)', () => {
-      // Verificar se há referências ao Google Calendar
-      cy.get('body').then(($body) => {
-        const hasCalendarIntegration = $body.text().toLowerCase().includes('google') || 
-                                     $body.text().toLowerCase().includes('calendar') ||
-                                     $body.find('[class*="google"], [class*="calendar"]').length > 0;
-        if (hasCalendarIntegration) {
-          cy.contains(/google|calendar/i).should('exist');
-        } else {
-          cy.log('Integração com Google Calendar não encontrada - funcionalidade pode ser implementada');
-          expect(true).to.be.true;
-        }
-      });
-    });
+  describe('Cadastro e validação de login', () => {
 
-    it('Deve permitir acesso às configurações (se disponível)', () => {
-      // Verificar se há botões de configuração ou perfil
-      cy.get('body').then(($body) => {
-        const hasSettingsElements = $body.find('button[class*="settings"], [class*="config"], [class*="profile"]').length > 0;
-        if (hasSettingsElements) {
-          cy.get('button[class*="settings"], [class*="config"], [class*="profile"]').first().should('be.visible');
-        } else {
-          cy.log('Elementos de configuração não encontrados');
-          expect(true).to.be.true;
-        }
-      });
-    });
-
-    it('Deve ter interface preparada para notificações (se disponível)', () => {
-      // Verificar se há elementos relacionados a notificações
-      cy.get('body').then(($body) => {
-        const hasNotificationElements = $body.find('[class*="notification"], [class*="alert"], [class*="bell"]').length > 0;
-        if (hasNotificationElements) {
-          cy.get('[class*="notification"], [class*="alert"], [class*="bell"]').should('exist');
-        } else {
-          cy.log('Elementos de notificação não encontrados - funcionalidade pode ser implementada');
-          expect(true).to.be.true;
-        }
-      });
+    it('Deve validar login e marcar o switch do Google Calendar', () => {
+      validarConectarGoogleCalendar();
     });
   });
 });

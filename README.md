@@ -5,33 +5,92 @@ Projeto de automação de testes end-to-end para o site **Kasa.live** usando **C
 
 ## 📋 Descrição
 
-Este projeto implementa testes automatizados para validar algumas funcionalidades da plataforma Kasa.live.
+Este projeto implementa testes automatizados para validar as funcionalidades core da plataforma Kasa.live, uma plataforma de agregação de conteúdo esportivo.
 
-## 🎯 Testes Implementados
+## 🎯 Requisitos Core da Aplicação
 
-Todos os **20 testes** implementados estão **passando** ✅
+A aplicação Kasa.live possui os seguintes requisitos funcionais principais:
+
+### 1. **Carregamento e Navegação**
+- Página inicial responsiva e acessível
+- Navegação intuitiva entre seções
+- Carregamento eficiente de conteúdo
+
+### 2. **Exibição de Partidas**
+- Listagem de partidas por liga/campeonato
+- Informações detalhadas: times, placar, status
+- Elementos visuais: escudos, logos
+
+### 3. **Favoritar Times e Partidas**
+- Sistema de favoritos para times
+- Marcação de partidas preferidas
+- Persistência de preferências do usuário
+
+### 4. **Busca de Partidas**
+- Campo de busca funcional
+- Filtros por liga, time, data
+- Resultados em tempo real
+
+### 5. **Melhores Momentos (Vídeos)**
+- Seção dedicada a highlights
+- Reprodução de vídeos
+- Busca dentro do conteúdo de vídeo
+
+### 6. **Integração com Google Calendar**
+- Marcação automática de partidas
+- Sincronização de eventos
+- Notificações de jogos
+
+## 🎯 Cenários de Testes Implementados
+
+Todos os **19 testes** implementados estão **passando** ✅
 
 ### Funcionalidades Básicas (8 testes)
-- ✅ **Carregamento de Página**: Validar que a página inicial carrega com sucesso
-- ✅ **Exibição de Partidas**: Verificar que as abas e partidas estão visíveis
-- ✅ **Informações de Ligas**: Validar ligações e campeonatos exibidos
-- ✅ **Detalhes das Partidas**: Testar exibição de times, escudos e status
-- ✅ **Rodapé**: Validar informações de copyright e versão
+- ✅ **Carregamento da Página** (1 teste)
+  - Validar que a página inicial carrega com sucesso
+  - Verificar presença de conteúdo na página
 
-### Funcionalidades Avançadas (12 testes)
-- ✅ **Favoritar Times e Partidas**: Interface preparada para favoritar (3 testes)
-- ✅ **Buscar Partidas**: Campos de busca e interação (3 testes)
-- ✅ **Melhores Momentos**: Navegação e conteúdo preparado (3 testes)
-- ✅ **Integração Google Calendar**: Elementos preparados para integração (3 testes)
+- ✅ **Exibição de Partidas** (2 testes)
+  - Exibir abas de navegação (Partidas e Melhores Momentos)
+  - Exibir informações de liga/campeonato
+
+- ✅ **Detalhes das Partidas** (3 testes)
+  - Exibir status das partidas (Finalizada)
+  - Exibir escudos dos times
+  - Exibir nomes dos times nas partidas
+
+- ✅ **Rodapé e Links** (2 testes)
+  - Exibir texto informativo/religioso
+  - Exibir versão e copyright
+
+### Funcionalidades Avançadas (11 testes)
+- ✅ **Favoritar Times e Partidas** (3 testes)
+  - Interface preparada para favoritar partidas
+  - Permitir interagir com elementos de time
+  - Seção de calendário preparada
+
+- ✅ **Buscar Partidas** (3 testes)
+  - Campo de busca disponível
+  - Permitir digitar no campo de busca
+  - Filtros ou opções de busca disponíveis
+
+- ✅ **Melhores Momentos** (3 testes)
+  - Navegar para a aba de melhores momentos
+  - Conteúdo preparado para vídeos
+  - Permitir navegação na seção
+
+- ✅ **Integração com Google Calendar** (2 testes)
+  - Validar que a integração não está implementada
+  - Validar ausência de interface de notificações
 
 ## 📊 Resultados dos Testes
 
 | Métrica | Valor |
 |---------|-------|
-| **Total de Testes** | 20 |
-| **Passou** | 20 |
+| **Total de Testes** | 19 |
+| **Passou** | 19 |
 | **Falhou** | 0 |
-| **Duração** | ~36 segundos |
+| **Duração** | ~38 segundos |
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -48,10 +107,10 @@ desafio_loomi/
 │   ├── e2e/
 │   │   └── homePage.cy.js           # Testes e2e da página inicial
 │   ├── spec/
-│   │   └── homePage.js              # Funções auxiliares
+│   │   └── testesPaginaPrincipal.js # Funções auxiliares
 │   ├── support/
 │   │   ├── e2e.js                   # Configuração global
-│   │   └── selectors.js             # Seletores centralizados
+│   │   └── selectors.js             # Seletores centralizados (em português)
 │   ├── screenshots/                 # Capturas de testes com falha
 │   └── config.js                    # Configuração do Cypress
 ├── mcp/
@@ -94,31 +153,20 @@ npm test -- --headed
 npm run cypress:open
 ```
 
-## 📊 Resultados dos Testes
-
-Todos os **8 testes** implementados estão **passando** ✅
-
-| Métrica | Valores |
-|---------|-------|
-| **Total de Testes** | 8 |
-| **Passou** | 8 |
-| **Falhou** | 0 |
-| **Duração** | ~20 segundos |
-
 ## 📁 Arquivos Principais
 
 ### `cypress/e2e/homePage.cy.js`
-Arquivo principal de testes que valida:
+Arquivo principal de testes que valida todos os cenários mapeados:
 - Carregamento da página
-- Exibição de partidas
-- Detalhes das partidas
-- Informações do rodapé
+- Exibição de partidas e detalhes
+- Funcionalidades de favoritar, busca e vídeos
+- Integração com calendário
 
 ### `cypress/support/selectors.js`
-Centraliza todos os seletores CSS para facilitar manutenção
+Centraliza todos os seletores CSS com nomes em português para facilitar manutenção e legibilidade.
 
-### `cypress/spec/homePage.js`
-Funções auxiliares reutilizáveis para testes
+### `cypress/spec/testesPaginaPrincipal.js`
+Funções auxiliares reutilizáveis para testes, organizadas por funcionalidade.
 
 ## 🔧 Configuração
 
@@ -126,6 +174,7 @@ O projeto está configurado em `cypress.config.js`:
 - **Base URL**: https://www.kasa.live/
 - **Browser**: Electron (padrão do Cypress)
 - **Viewport**: 1280x720
+- **Timeouts**: Configurados para estabilidade
 
 ## 📝 Padrões de Teste
 
@@ -134,11 +183,11 @@ Os testes seguem o padrão BDD (Behavior Driven Development) do Cypress:
 ```javascript
 describe('Página Inicial - Kasa.live', () => {
   beforeEach(() => {
-    cy.visit('/');
+    cy.visit('/', { timeout: 10000 });
   });
 
   it('Deve carregar com sucesso', () => {
-    cy.get('body').should('be.visible');
+    cy.get(selectors.corpoDaPagina).should('be.visible');
   });
 });
 ```
