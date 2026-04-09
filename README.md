@@ -9,7 +9,7 @@ Este projeto implementa testes automatizados para validar as funcionalidades cor
 
 ## 🎯 Cenários de Testes Implementados
 
-Todos os **18 testes** implementados estão **passando** ✅
+Todos os **17 testes** implementados estão **passando** ✅
 
 ### Funcionalidades Básicas (7 testes)
 - ✅ **Carregamento da Página** (1 teste)
