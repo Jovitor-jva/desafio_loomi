@@ -182,7 +182,7 @@ describe('Página Inicial - Kasa.live', () => {
     });
   });
 
-  describe('Cadastro e validação de login', () => {
+  describe('Validar o switch de integração com Google Calendar', () => {
 
     it('Deve validar login e marcar o switch do Google Calendar', () => {
       validarConectarGoogleCalendar();
