@@ -7,10 +7,6 @@ Projeto de automação de testes end-to-end para o site **Kasa.live** usando **C
 
 Este projeto implementa testes automatizados para validar as funcionalidades core da plataforma Kasa.live. Inclui um **MCP Server** que expõe as capacidades de automação para integração com modelos de linguagem.
 
-## 📋 Descrição
-
-Este projeto implementa testes automatizados para validar as funcionalidades core da plataforma Kasa.live, uma plataforma de agregação de conteúdo esportivo.
-
 ## 🎯 Requisitos Core da Aplicação
 
 A aplicação Kasa.live possui os seguintes requisitos funcionais principais:
@@ -94,9 +90,11 @@ Todos os **18 testes** implementados estão **passando** ✅
 | **Passou** | 18 |
 | **Falhou** | 0 |
 | **Duração** | ~45 segundos |
+### OBS: O tempo de duração foi obtido a partir da média de tempo em 5 execuções realizadas através do comando **NPX CYPRESS OPEN**. Esse tempo pode variar a depender do hardware utilizado ou se a execução for feita em modo Headless.
+
 ## 🤖 MCP Server
 
-Este projeto inclui um **Model Context Protocol (MCP) Server** que permite a integração das capacidades de automação do Cypress com modelos de linguagem.
+Conforme solicitado no desafio foi implementado um contexto simples de **Model Context Protocol (MCP) Server** que permite a integração das capacidades de automação do Cypress com modelos de linguagem.
 
 ### O que é MCP?
 
@@ -107,13 +105,6 @@ O **Model Context Protocol (MCP)** é um protocolo aberto que padroniza como apl
 1. **Cliente MCP**: Aplicação que se conecta ao servidor (ex: VS Code, Cursor, ou qualquer cliente MCP)
 2. **Servidor MCP**: Provedor de ferramentas e recursos (nosso `server.js`)
 3. **Protocolo**: Comunicação JSON-RPC 2.0 via stdio (entrada/saída padrão)
-
-#### Benefícios do MCP:
-
-- **Padronização**: Interface consistente para todas as ferramentas
-- **Segurança**: Execução isolada em processos separados
-- **Extensibilidade**: Fácil adição de novas ferramentas e recursos
-- **Integração com IA**: LLMs podem executar testes e analisar resultados automaticamente
 
 ### Funcionalidades do MCP Server
 
