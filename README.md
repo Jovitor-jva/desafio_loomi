@@ -1,11 +1,11 @@
 
-# Kasa.live - Automação de Testes E2E com Cypress
+# Projeto de automação de testes para a etapa de desafio técnico
 
 Projeto de automação de testes end-to-end para o site **Kasa.live** usando **Cypress**.
 
 ## 📋 Descrição
 
-Este projeto implementa testes automatizados para validar a funcionalidade da plataforma Kasa.live, um agregador de partidas de futebol em tempo real. Todos os testes estão passando e seguem as melhores práticas de automação.
+Este projeto implementa testes automatizados para validar algumas funcionalidades da plataforma Kasa.live.
 
 ## 🎯 Testes Implementados
 
@@ -56,7 +56,7 @@ desafio_loomi/
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/desafio_loomi.git
+git clone https://github.com/Jovitor-jva/desafio_loomi.git
 cd desafio_loomi
 
 # Instale as dependências
@@ -80,7 +80,7 @@ npm run cypress:open
 
 Todos os **8 testes** implementados estão **passando** ✅
 
-| Métrica | Valor |
+| Métrica | Valores |
 |---------|-------|
 | **Total de Testes** | 8 |
 | **Passou** | 8 |
@@ -125,19 +125,9 @@ describe('Página Inicial - Kasa.live', () => {
 });
 ```
 
-## 🌐 Links Úteis
-
-- [Cypress Documentation](https://docs.cypress.io)
-- [Kasa.live](https://www.kasa.live/)
-- [Node.js](https://nodejs.org/)
-
-## 📄 Licença
-
-Este projeto é fornecido como está para fins educacionais e de automação de testes.
-
 ## 👤 Autor
 
-Desafio Loomi - Automação e Testes
+João Vitor Lima da Silva - Teste técnico
 
 ---
 
