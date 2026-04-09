@@ -322,7 +322,7 @@ Centralização de todos os seletores CSS com nomes em português:
 
 O projeto está configurado em `cypress.config.js`:
 - **Base URL**: https://www.kasa.live/
-- **Browser**: Electron (padrão do Cypress)
+- **Browser**: Chrome
 - **Viewport**: 1280x720
 - **Timeouts**: Configurados para estabilidade
 
@@ -361,28 +361,6 @@ describe('Validar a visualização da página principal', () => {
 - **Validações Robustas**: Verificações de estado e elementos
 - **Cleanup Automático**: Logout no final da suíte de testes
 - **Logs Informativos**: Mensagens de debug para troubleshooting
-
-## � Melhorias Futuras
-
-### Funcionalidades a Implementar
-- [ ] **Testes de Performance**: Métricas de carregamento e Core Web Vitals
-- [ ] **Testes de Responsividade**: Validação em diferentes dispositivos
-- [ ] **Testes de Acessibilidade**: Conformidade WCAG
-- [ ] **Testes de API**: Validação de endpoints backend
-- [ ] **Testes de Regressão Visual**: Comparação de screenshots
-
-### Otimizações Técnicas
-- [ ] **Parallel Execution**: Execução paralela de testes
-- [ ] **Test Data Management**: Estratégia de dados de teste
-- [ ] **CI/CD Integration**: Pipeline automatizado
-- [ ] **Reporting Avançado**: Dashboards de resultados
-- [ ] **Cross-browser Testing**: Validação em múltiplos browsers
-
-### Expansão do MCP Server
-- [ ] **Mais Tools**: Ferramentas adicionais para automação
-- [ ] **Resources Dinâmicos**: Exposição automática de logs e screenshots
-- [ ] **Integração com LLMs**: Suporte a mais modelos de linguagem
-- [ ] **Webhooks**: Notificações automáticas de falhas
 
 ## 👤 Autor
 
