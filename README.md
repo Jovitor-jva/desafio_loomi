@@ -50,8 +50,8 @@ Todos os **17 testes** implementados estão **passando** ✅
 
 | Métrica | Valor |
 |---------|-------|
-| **Total de Testes** | 18 |
-| **Passou** | 18 |
+| **Total de Testes** | 17 |
+| **Passou** | 17 |
 | **Falhou** | 0 |
 | **Duração Estimada** | ~45-60 segundos |
 ### OBS: O tempo de duração foi obtido a partir da média de tempo em 5 execuções realizadas através do comando **NPX CYPRESS OPEN**. Esse tempo pode variar a depender do hardware utilizado ou se a execução for feita em modo Headless.
@@ -198,7 +198,7 @@ npx cypress open
 desafio_loomi/
 ├── cypress/
 │   ├── e2e/
-│   │   └── executarTestesPaginaPrincipal.cy.js  # Arquivo principal de testes (18 cenários)
+│   │   └── executarTestesPaginaPrincipal.cy.js  # Arquivo principal de testes (17 cenários)
 │   ├── spec/
 │   │   └── testesPaginaPrincipal.js             # Funções helper e lógica de testes
 │   ├── support/
@@ -250,7 +250,7 @@ npm run cypress:open
 ## 📁 Arquivos Principais
 
 ### `cypress/e2e/executarTestesPaginaPrincipal.cy.js`
-Arquivo principal de testes que valida todos os 18 cenários mapeados:
+Arquivo principal de testes que valida todos os cenários mapeados:
 - **Carregamento da página**: Validação de conteúdo e responsividade
 - **Exibição de partidas**: Abas de navegação e informações de liga
 - **Detalhes das partidas**: Status, escudos e nomes dos times
