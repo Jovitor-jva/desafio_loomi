@@ -13,38 +13,38 @@ Todos os **17 testes** implementados estão **passando** ✅
 
 ### Funcionalidades Básicas (7 testes)
 - ✅ **Carregamento da Página** (1 teste)
-  - Validar que a página inicial carrega com sucesso e contém conteúdo
+  - Verifica se a página inicial abre corretamente e mostra o conteúdo principal.
 
 - ✅ **Exibição de Partidas** (2 testes)
-  - Exibir as abas de navegação (Partidas e Melhores Momentos)
-  - Exibir informações de liga/campeonato (MLS, Premier League)
+  - Confirma que as abas de navegação (“Partidas” e “Melhores Momentos”) estão visíveis.
+  - Valida que as informações das ligas/campeonatos (MLS, Premier League) aparecem para os jogos.
 
 - ✅ **Detalhes das Partidas** (3 testes)
-  - Exibir o status das partidas (Finalizada)
-  - Exibir escudos dos times (pelo menos 2 imagens)
-  - Exibir nomes dos times nas partidas (Minnesota Utd, Inter Miami CF, Toronto FC, DC United)
+  - Verifica se o status das partidas é exibido como “Finalizada”.
+  - Confirma que pelo menos dois escudos dos times são carregados corretamente.
+  - Valida que os nomes dos times aparecem nas partidas listadas (Minnesota Utd, Inter Miami CF, Toronto FC, DC United).
 
 - ✅ **Rodapé e Links** (1 teste)
-  - Exibir o rodapé corretamente
+  - Verifica a presença e o conteúdo correto do rodapé da página.
 
 ### Funcionalidades Avançadas (10 testes)
 - ✅ **Favoritar Times e Interação** (3 testes)
-  - Permitir favoritar um time após login (fluxo completo: navegação → favoritar → concluir)
-  - Permitir interagir com elementos de time (clicar nos escudos)
-  - Seção de calendário preparada para implementação futura
+  - Valida o fluxo de login e a ação de favoritar um time, garantindo a persistência da escolha.
+  - Confirma que é possível interagir com elementos do time, como clicar nos escudos.
+  - Verifica a existência da seção de calendário como elemento preparado para futuras funcionalidades.
 
 - ✅ **Buscar Partidas** (3 testes)
-  - Campo de busca disponível na página
-  - Permitir digitar no campo de busca ("09 Dortmund")
-  - Filtros ou opções de busca disponíveis (se implementados)
+  - Verifica se o campo de busca está disponível e acessível na página.
+  - Testa a digitação de um termo de busca como “09 Dortmund” para validar a entrada.
+  - Confirma a presença de filtros ou opções de busca quando implementados.
 
 - ✅ **Melhores Momentos** (3 testes)
-  - Navegar para a aba de melhores momentos (/melhores-momentos)
-  - Conteúdo preparado para vídeos (elementos de vídeo, thumbnail, iframe)
-  - Permitir navegação na seção de melhores momentos
+  - Navega até a aba de melhores momentos para validar a rota /melhores-momentos.
+  - Confirma a presença de conteúdo visual de vídeo, como thumbnails e iframes.
+  - Verifica a navegação dentro da seção de melhores momentos.
 
 - ✅ **Integração com Google Calendar** (1 teste)
-  - Validar login e marcar o switch do Google Calendar
+  - Valida que o login funciona e que o switch do Google Calendar pode ser ativado.
 
 ## 📊 Resultados dos Testes
 
