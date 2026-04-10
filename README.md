@@ -335,4 +335,4 @@ João Vitor Lima da Silva - Analista de qualidade de software
 
 **Última atualização**: Abril, 2026
 
-![alt text](image-2.png)
+![alt text](image-3.png)
