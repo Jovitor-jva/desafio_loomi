@@ -37,3 +37,6 @@ out/
 logs/
 *.log
 npm-debug.log*
+
+# Imagens 
+image-3.png
