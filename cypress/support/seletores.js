@@ -6,7 +6,7 @@ export const seletores = {
   corpoDaPagina: 'body',
 
   // Barra de busca e entrada
-  entradaDeBusca: 'input[type="text"]',
+  entradaDeBusca: 'input[type="text"], input[type="search"], [class*="search"] input, input[placeholder*="Buscar"], input[placeholder*="Search"], input[aria-label*="Buscar"], input[aria-label*="Search"]',
   containerDeBusca: '[class*="search"]',
   botaoDeBusca: 'button[type="submit"]',
   filtrosDeBusca: '[class*="filter"]',
