@@ -1,131 +1,82 @@
+const { Server } = require('@modelcontextprotocol/sdk/server');
+const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio');
+const {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema
+} = require('@modelcontextprotocol/sdk/types');
 
-// Importações necessárias para o MCP Server
-const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
-const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
-const { CallToolRequestSchema, ListToolsRequestSchema, ListResourcesRequestSchema, ReadResourceRequestSchema } = require('@modelcontextprotocol/sdk/types.js');
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Classe principal do servidor MCP para Cypress
-class CypressMCPServer {
+class MCPServer {
   constructor() {
-    // Inicializar o servidor MCP com nome e versão
     this.server = new Server(
-      {
-        name: 'cypress-mcp-server',
-        version: '1.0.0',
-      },
-      {
-        capabilities: {
-          tools: {},
-          resources: {},
-        },
-      }
+      { name: 'cypress-mcp', version: '1.0.0' },
+      { capabilities: { tools: {}, resources: {} } }
     );
 
-    // Configurar os handlers para as diferentes operações MCP
-    this.setupHandlers();
-    // Mapa para armazenar resultados de testes (usado para criar resources dinâmicos)
     this.testResults = new Map();
+    this.setup();
   }
 
-  // Método para configurar todos os handlers de requisições MCP
-  setupHandlers() {
-    // Handler para listar todas as tools disponíveis
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      return {
-        tools: [
-          {
-            name: 'run_test_case',
-            description: 'Executa um caso de teste Cypress específico. Aceita o nome do fluxo (ex: "login", "checkout") e retorna o resultado do teste.',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                flow: {
-                  type: 'string',
-                  description: 'Nome do fluxo de teste a ser executado (ex: "executarTestesPaginaPrincipal.cy.js")'
-                },
-                options: {
-                  type: 'object',
-                  description: 'Opções adicionais para execução do teste',
-                  properties: {
-                    browser: {
-                      type: 'string',
-                      description: 'Navegador a ser usado (electron, chrome, firefox)',
-                      default: 'electron'
-                    },
-                    headless: {
-                      type: 'boolean',
-                      description: 'Executar em modo headless',
-                      default: true
-                    }
-                  }
-                }
-              },
-              required: ['flow']
-            }
-          },
-          {
-            name: 'get_element_status',
-            description: 'Obtém o estado atual de um elemento na página usando um seletor CSS.',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                selector: {
-                  type: 'string',
-                  description: 'Seletor CSS do elemento a ser verificado'
-                },
-                url: {
-                  type: 'string',
-                  description: 'URL da página a ser visitada',
-                  default: 'https://www.kasa.live'
-                }
-              },
-              required: ['selector']
-            }
+  setup() {
+    // LISTAR TOOLS
+    this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
+      tools: [
+        {
+          name: 'run_test_case',
+          description: 'Executa um teste Cypress pelo nome do arquivo',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              flow: { type: 'string' }
+            },
+            required: ['flow']
           }
-        ]
-      };
+        },
+        {
+          name: 'get_element_status',
+          description: 'Retorna estado de um elemento',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              selector: { type: 'string' },
+              url: { type: 'string' }
+            },
+            required: ['selector']
+          }
+        }
+      ]
+    }));
+
+    // EXECUTAR TOOLS
+    this.server.setRequestHandler(CallToolRequestSchema, async (req) => {
+      const { name, arguments: args } = req.params;
+
+      if (name === 'run_test_case') return this.runTest(args);
+      if (name === 'get_element_status') return this.getElement(args);
+
+      throw new Error('Tool não encontrada');
     });
 
-    // Handler para executar tools específicas
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
-
-      // Roteamento baseado no nome da tool
-      switch (name) {
-        case 'run_test_case':
-          return await this.runTestCase(args);
-        case 'get_element_status':
-          return await this.getElementStatus(args);
-        default:
-          throw new Error(`Tool não encontrada: ${name}`);
-      }
-    });
-
-    // Handler para listar resources disponíveis (gerados dinamicamente)
     this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
       const resources = [];
 
-      // Percorrer todos os resultados de teste armazenados
-      for (const [testId, result] of this.testResults) {
-        // Só criar resources para testes que falharam
-        if (result.status === 'failed') {
-          // Resource para log de erro
+      for (const [id, r] of this.testResults) {
+        if (r.status === 'failed') {
           resources.push({
-            uri: `cypress://test-results/${testId}/error-log`,
-            name: `Log de erro - ${testId}`,
-            description: `Log detalhado do erro do teste ${testId}`,
+            uri: `test://${id}/log`,
+            name: `Erro ${id}`,
             mimeType: 'text/plain'
           });
 
-          // Resource para screenshot, se existir
-          if (result.screenshot) {
+          if (r.screenshot) {
             resources.push({
-              uri: `cypress://test-results/${testId}/screenshot`,
-              name: `Screenshot - ${testId}`,
-              description: `Screenshot do erro do teste ${testId}`,
+              uri: `test://${id}/screenshot`,
+              name: `Screenshot ${id}`,
               mimeType: 'image/png'
             });
           }
@@ -135,256 +86,112 @@ class CypressMCPServer {
       return { resources };
     });
 
-    // Handler para ler conteúdo de resources específicos
-    this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    // 📌 LER RESOURCE
+    this.server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
+      const { uri } = req.params;
+      const [, id, type] = uri.split('/');
 
-      switch (name) {
-        case 'run_test_case':
-          return await this.runTestCase(args);
-        case 'get_element_status':
-          return await this.getElementStatus(args);
-        default:
-          throw new Error(`Tool não encontrada: ${name}`);
-      }
-    });
+      const result = this.testResults.get(id);
+      if (!result) throw new Error('Resultado não encontrado');
 
-    // Listar resources disponíveis
-    // Handler para listar resources disponíveis (gerados dinamicamente)
-    this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
-      const resources = [];
-
-      // Percorrer todos os resultados de teste armazenados
-      for (const [testId, result] of this.testResults) {
-        // Só criar resources para testes que falharam
-        if (result.status === 'failed') {
-          // Resource para log de erro
-          resources.push({
-            uri: `cypress://test-results/${testId}/error-log`,
-            name: `Log de erro - ${testId}`,
-            description: `Log detalhado do erro do teste ${testId}`,
-            mimeType: 'text/plain'
-          });
-
-          // Resource para screenshot, se existir
-          if (result.screenshot) {
-            resources.push({
-              uri: `cypress://test-results/${testId}/screenshot`,
-              name: `Screenshot - ${testId}`,
-              description: `Screenshot do erro do teste ${testId}`,
-              mimeType: 'image/png'
-            });
-          }
-        }
+      if (type === 'log') {
+        return {
+          contents: [{ uri, mimeType: 'text/plain', text: result.error }]
+        };
       }
 
-      return { resources };
-    });
+      if (type === 'screenshot' && result.screenshot) {
+        const file = path.join('cypress/screenshots', result.screenshot);
+        const img = fs.readFileSync(file).toString('base64');
 
-    // Handler para ler conteúdo de resources específicos
-    this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-      const { uri } = request.params;
-
-      // Verificar se é um resource de resultado de teste
-      if (uri.startsWith('cypress://test-results/')) {
-        const parts = uri.split('/');
-        const testId = parts[3];
-        const resourceType = parts[4];
-
-        // Buscar o resultado do teste no mapa
-        const result = this.testResults.get(testId);
-        if (!result) {
-          throw new Error(`Resultado de teste não encontrado: ${testId}`);
-        }
-
-        // Retornar log de erro
-        if (resourceType === 'error-log') {
-          return {
-            contents: [{
-              uri,
-              mimeType: 'text/plain',
-              text: result.error || 'Erro não disponível'
-            }]
-          };
-        }
-        // Retornar screenshot em base64
-        else if (resourceType === 'screenshot') {
-          if (!result.screenshot) {
-            throw new Error(`Screenshot não disponível para o teste: ${testId}`);
-          }
-
-          // Construir caminho do arquivo de screenshot
-          const screenshotPath = path.join(process.cwd(), 'cypress', 'screenshots', result.screenshot);
-          if (fs.existsSync(screenshotPath)) {
-            // Ler arquivo e converter para base64
-            const imageData = fs.readFileSync(screenshotPath);
-            return {
-              contents: [{
-                uri,
-                mimeType: 'image/png',
-                blob: imageData.toString('base64')
-              }]
-            };
-          } else {
-            throw new Error(`Screenshot não encontrado: ${screenshotPath}`);
-          }
-        }
+        return {
+          contents: [{ uri, mimeType: 'image/png', blob: img }]
+        };
       }
 
-      throw new Error(`Resource não encontrado: ${uri}`);
+      throw new Error('Resource inválido');
     });
   }
 
-  // Método para executar um caso de teste Cypress
-  async runTestCase(args) {
-    const { flow, options = {} } = args;
-    // Criar ID único para o teste baseado no nome e timestamp
-    const testId = `${flow}_${Date.now()}`;
+  // 🚀 RUN TEST
+  runTest({ flow }) {
+    const id = `${flow}_${Date.now()}`;
+    const spec = `cypress/e2e/${flow}`;
 
     return new Promise((resolve) => {
-      // Construir caminho do arquivo de teste
-      const specPath = `cypress/e2e/${flow}`;
-      // Comando base do Cypress
-      let command = `npx cypress run --spec "${specPath}"`;
-
-      // Adicionar opções do navegador se especificadas
-      if (options.browser) {
-        command += ` --browser ${options.browser}`;
-      }
-
-      // Adicionar opção para modo não-headless se especificado
-      if (options.headless === false) {
-        command += ' --headed';
-      }
-
-      // Executar o comando Cypress
-      exec(command, { cwd: process.cwd() }, (error, stdout, stderr) => {
-        // Preparar resultado do teste
+      exec(`npx cypress run --spec "${spec}"`, (err, stdout, stderr) => {
         const result = {
-          status: error ? 'failed' : 'passed',
+          status: err ? 'failed' : 'passed',
           logs: stdout,
-          error: stderr,
-          timestamp: new Date().toISOString()
+          error: stderr
         };
 
-        // Procurar por screenshot se o teste falhou
-        if (error) {
-          const screenshotsDir = path.join(process.cwd(), 'cypress', 'screenshots');
-          if (fs.existsSync(screenshotsDir)) {
-            // Listar arquivos de screenshot
-            const screenshotFiles = fs.readdirSync(screenshotsDir);
-            // Encontrar screenshot relacionado ao teste
-            const testScreenshot = screenshotFiles.find(file => file.includes(flow.replace('.cy.js', '')));
-            if (testScreenshot) {
-              result.screenshot = testScreenshot;
-            }
+        // tenta pegar screenshot simples
+        if (err) {
+          const dir = 'cypress/screenshots';
+          if (fs.existsSync(dir)) {
+            const file = fs.readdirSync(dir).find(f => f.includes(flow));
+            if (file) result.screenshot = file;
           }
         }
 
-        // Armazenar resultado para uso posterior nos resources
-        this.testResults.set(testId, result);
+        this.testResults.set(id, result);
 
-        // Retornar resposta formatada para o cliente MCP
         resolve({
           content: [{
             type: 'text',
-            text: JSON.stringify({
-              testId,
-              status: result.status,
-              summary: result.status === 'passed' ? 'Teste executado com sucesso' : 'Teste falhou',
-              logs: result.logs.substring(0, 500) + (result.logs.length > 500 ? '...' : ''),
-              error: result.error ? result.error.substring(0, 500) + (result.error.length > 500 ? '...' : '') : null,
-              screenshot: result.screenshot || null
-            }, null, 2)
+            text: JSON.stringify({ id, status: result.status }, null, 2)
           }]
         });
       });
     });
   }
 
-  // Método para obter o status de um elemento na página
-  async getElementStatus(args) {
-    const { selector, url = 'https://www.kasa.live' } = args;
+  // GET ELEMENT
+  getElement({ selector, url = 'https://www.kasa.live' }) {
+    const temp = 'cypress/e2e/temp.cy.js';
 
-    // Criar caminho para arquivo temporário de teste
-    const tempSpecPath = path.join(process.cwd(), 'cypress', 'e2e', 'temp_element_check.cy.js');
-
-    // Criar conteúdo do teste temporário que verifica o elemento
-    const specContent = `
-describe('Verificação Dinâmica de Elemento', () => {
-  it('Verificar estado do elemento: ${selector}', () => {
+    const code = `
+describe('check', () => {
+  it('element', () => {
     cy.visit('${url}');
-    cy.get('${selector}').then($element => {
-      const elementInfo = {
-        exists: true,
-        visible: $element.is(':visible'),
-        text: $element.text().trim(),
-        tagName: $element.prop('tagName'),
-        className: $element.attr('class') || '',
-        id: $element.attr('id') || '',
-        attributes: {}
-      };
-
-      // Capturar alguns atributos importantes
-      const importantAttrs = ['type', 'placeholder', 'value', 'href', 'src', 'alt', 'data-cy'];
-      importantAttrs.forEach(attr => {
-        const value = $element.attr(attr);
-        if (value) {
-          elementInfo.attributes[attr] = value;
-        }
+    cy.get('${selector}').then(el => {
+      cy.writeFile('element.json', {
+        visible: el.is(':visible'),
+        text: el.text()
       });
-
-      cy.writeFile('element_status.json', elementInfo);
     });
   });
 });
 `;
 
-    // Escrever arquivo temporário
-    fs.writeFileSync(tempSpecPath, specContent);
+    fs.writeFileSync(temp, code);
 
     return new Promise((resolve) => {
-      // Executar teste temporário em modo quiet
-      exec(`npx cypress run --spec "${tempSpecPath}" --quiet`, { cwd: process.cwd() }, (error, stdout, stderr) => {
-        // Valor padrão se elemento não for encontrado
-        let elementInfo = { exists: false, error: 'Elemento não encontrado' };
+      exec(`npx cypress run --spec "${temp}" --quiet`, () => {
+        let data = { exists: false };
 
-        try {
-          // Tentar ler arquivo de resultado gerado pelo teste
-          const statusFile = path.join(process.cwd(), 'element_status.json');
-          if (fs.existsSync(statusFile)) {
-            elementInfo = JSON.parse(fs.readFileSync(statusFile, 'utf8'));
-            // Limpar arquivo temporário após uso
-            fs.unlinkSync(statusFile);
-          }
-        } catch (e) {
-          elementInfo.error = `Erro ao ler status do elemento: ${e.message}`;
+        if (fs.existsSync('element.json')) {
+          data = JSON.parse(fs.readFileSync('element.json'));
+          fs.unlinkSync('element.json');
         }
 
-        // Limpar arquivo de spec temporário
-        if (fs.existsSync(tempSpecPath)) {
-          fs.unlinkSync(tempSpecPath);
-        }
+        fs.unlinkSync(temp);
 
-        // Retornar informações do elemento
         resolve({
           content: [{
             type: 'text',
-            text: JSON.stringify(elementInfo, null, 2)
+            text: JSON.stringify(data, null, 2)
           }]
         });
       });
     });
   }
 
-  // Método para iniciar o servidor MCP
   async start() {
-    // Configurar transporte stdio para comunicação com cliente MCP
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('Cypress MCP Server iniciado');
+    await this.server.connect(new StdioServerTransport());
+    console.error('MCP Server rodando...');
   }
 }
 
-// Inicializar e iniciar o servidor
-const server = new CypressMCPServer();
-server.start().catch(console.error);
+new MCPServer().start();

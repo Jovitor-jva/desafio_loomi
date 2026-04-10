@@ -72,7 +72,9 @@ npx cypress run --record --spec "cypress/e2e/executarTestesPaginaPrincipal.cy.js
 
 ## 🤖 MCP Server
 
-Conforme solicitado no desafio foi implementado um contexto simples de **Model Context Protocol (MCP) Server** que permite a integração das capacidades de automação do Cypress com modelos de linguagem.
+Conforme solicitado no desafio, foi implementado um contexto simples de **Model Context Protocol (MCP) Server** que permite a integração das capacidades de automação do Cypress com modelos de linguagem.
+
+---
 
 ### O que é MCP?
 
@@ -82,7 +84,9 @@ O **Model Context Protocol (MCP)** é um protocolo aberto que padroniza como apl
 
 1. **Cliente MCP**: Aplicação que se conecta ao servidor (ex: VS Code, Cursor, ou qualquer cliente MCP)
 2. **Servidor MCP**: Provedor de ferramentas e recursos (nosso `server.js`)
-3. **Protocolo**: Comunicação JSON-RPC 2.0 via stdio (entrada/saída padrão)
+3. **Protocolo**: Comunicação via JSON-RPC 2.0 utilizando stdio (entrada/saída padrão)
+
+---
 
 ### Funcionalidades do MCP Server
 
@@ -92,22 +96,50 @@ O **Model Context Protocol (MCP)** é um protocolo aberto que padroniza como apl
    - **Descrição**: Executa um caso de teste Cypress específico
    - **Parâmetros**:
      - `flow`: Nome do arquivo de teste (ex: `"executarTestesPaginaPrincipal.cy.js"`)
-     - `options`: Opções adicionais (browser, headless)
-   - **Retorno**: Resultado da execução com status, logs e possíveis erros
+   - **Retorno**:
+     - Status da execução (`passed` ou `failed`)
+     - Identificador da execução
+     - Logs resumidos
+
+---
 
 2. **`get_element_status`**
    - **Descrição**: Obtém o estado atual de um elemento na página
    - **Parâmetros**:
      - `selector`: Seletor CSS do elemento
      - `url`: URL da página (padrão: https://www.kasa.live)
-   - **Retorno**: Informações detalhadas sobre o elemento (visibilidade, texto, atributos, etc.)
+   - **Retorno**:
+     - Visibilidade do elemento
+     - Texto exibido
+     - Informações básicas do elemento
 
-#### 📄 Resources Disponíveis
+---
 
-Quando um teste falha, o MCP Server automaticamente expõe:
+#### 📦 Resources (Contexto de Erro)
 
-- **Error Logs**: Logs detalhados de erro como resources acessíveis
-- **Screenshots**: Capturas de tela dos erros para análise visual
+Quando um teste falha, o MCP Server expõe automaticamente recursos adicionais para análise:
+
+- 📄 **Log de erro**
+- 📸 **Screenshot da falha** (quando disponível)
+
+Esses resources podem ser acessados pela IA para:
+
+- Identificar a causa raiz de falhas
+- Analisar o comportamento da aplicação
+- Auxiliar no processo de debug automatizado
+
+---
+
+### 🎯 Objetivo
+
+O objetivo desta implementação é demonstrar como integrar testes automatizados com IA, permitindo:
+
+- Execução de testes sob demanda
+- Análise automatizada de falhas
+- Inspeção dinâmica da interface
+- Suporte a debugging inteligente
+
+---
 
 ### Como Usar o MCP Server
 
@@ -291,32 +323,6 @@ O projeto está configurado em `cypress.config.js`:
 - **Viewport**: 1280x720
 - **Timeouts**: Configurados para estabilidade
 
-## 📝 Padrões de Teste
-
-Os testes seguem o padrão BDD (Behavior Driven Development) do Cypress com estrutura organizada:
-
-```javascript
-describe('Validar a visualização da página principal', () => {
-  beforeEach(() => {
-    // Setup: Verificação de login e navegação
-    cy.visit('/');
-    // Lógica condicional de autenticação
-  });
-
-  describe('Carregamento da Página', () => {
-    it('Deve carregar a página inicial com sucesso', () => {
-      cy.get(seletores.corpoDaPagina).should('be.visible');
-    });
-  });
-
-  // ... outros grupos de teste
-
-  after(() => {
-    // Cleanup: Logout após todos os testes
-    fazerLogout();
-  });
-});
-```
 
 ### Estratégias Implementadas
 
